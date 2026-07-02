@@ -1,11 +1,21 @@
 {
   "name": "conf-mcp",
   "version": "1.0.0",
+  "description": "MCP server for Confluence Server/Data Center (REST API)",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "conf-mcp": "dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/namcpgem/gem-conf-mcp.git"
+  },
+  "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
     "build": "node scripts/build.js",
+    "prepare": "npm run build",
     "lint": "biome check --write . && tsc --noEmit",
     "release": "node scripts/build.js && node scripts/release.js"
   },

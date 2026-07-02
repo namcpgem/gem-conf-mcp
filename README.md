@@ -1,6 +1,8 @@
-# conf-mcp
+# Confluence mcp
 
 MCP server for Confluence Server/Data Center (REST API). Written in Node.js ESM.
+
+See [docs/USAGE.md](docs/USAGE.md) for end-user setup (Vietnamese) and [docs/RELEASE.md](docs/RELEASE.md) for the release process (Vietnamese).
 
 ## Requirements
 
@@ -15,13 +17,21 @@ cp .env.example .env
 # edit .env with your credentials
 ```
 
+## Install from GitHub
+
+```bash
+npx github:namcpgem/gem-conf-mcp
+```
+
+Runs directly from the repo, no npm publish needed. npm runs the `prepare` script on install to build `dist/index.js`. Requires the repo to be public.
+
 ## Environment variables
 
-| Variable                | Required | Description                                          |
-| ------------------------ | -------- | ----------------------------------------------------- |
-| `CONFLUENCE_HOST`         | yes      | Base URL, e.g. `https://conf.company.com`             |
-| `CONFLUENCE_USERNAME`     | yes      | Confluence username                                    |
-| `CONFLUENCE_PASSWORD`     | yes      | Confluence password                                    |
+| Variable              | Required | Description                               |
+| --------------------- | -------- | ----------------------------------------- |
+| `CONFLUENCE_HOST`     | yes      | Base URL, e.g. `https://conf.company.com` |
+| `CONFLUENCE_USERNAME` | yes      | Confluence username                       |
+| `CONFLUENCE_PASSWORD` | yes      | Confluence password                       |
 
 ## Build
 
@@ -58,8 +68,8 @@ Add to `.claude/settings.json` (or `claude_desktop_config.json`):
 {
   "mcpServers": {
     "conf-mcp": {
-      "command": "node",
-      "args": ["/path/to/conf-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "github:namcpgem/gem-conf-mcp"],
       "env": {
         "CONFLUENCE_HOST": "https://conf.company.com",
         "CONFLUENCE_USERNAME": "your_username",
@@ -70,21 +80,35 @@ Add to `.claude/settings.json` (or `claude_desktop_config.json`):
 }
 ```
 
+If using the release zip or running from source instead:
+
+```json
+{
+  "mcpServers": {
+    "conf-mcp": {
+      "command": "node",
+      "args": ["/path/to/conf-mcp/dist/index.js"],
+      "env": { "...": "..." }
+    }
+  }
+}
+```
+
 Adjust the path in `args` to wherever you extracted the release zip. For local development from source, point `args` at `src/index.js` instead.
 
 ## Tools
 
-| Tool               | Description                                                                                                 |
-| ------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `get_page`           | Get full details of a Confluence page by its numeric content ID                                              |
-| `get_page_by_title`  | Get a Confluence page by its space key and exact title                                                       |
-| `create_page`        | Create a new Confluence page (body must be storage format XHTML, not Markdown)                               |
-| `update_page`        | Update a page — full replace, auto-increments version; omit body/title to keep existing values               |
-| `delete_page`        | Move a page to trash (recoverable, does not permanently purge)                                               |
-| `search_pages`       | Search Confluence content using CQL (Confluence Query Language)                                              |
-| `list_spaces`        | List Confluence spaces, or fetch a single space by key                                                       |
-| `add_comment`        | Add a comment to a page (storage format XHTML, not Markdown)                                                 |
-| `get_comments`       | Get comments on a page                                                                                       |
+| Tool                | Description                                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------------- |
+| `get_page`          | Get full details of a Confluence page by its numeric content ID                                |
+| `get_page_by_title` | Get a Confluence page by its space key and exact title                                         |
+| `create_page`       | Create a new Confluence page (body must be storage format XHTML, not Markdown)                 |
+| `update_page`       | Update a page — full replace, auto-increments version; omit body/title to keep existing values |
+| `delete_page`       | Move a page to trash (recoverable, does not permanently purge)                                 |
+| `search_pages`      | Search Confluence content using CQL (Confluence Query Language)                                |
+| `list_spaces`       | List Confluence spaces, or fetch a single space by key                                         |
+| `add_comment`       | Add a comment to a page (storage format XHTML, not Markdown)                                   |
+| `get_comments`      | Get comments on a page                                                                         |
 
 ## Notes
 

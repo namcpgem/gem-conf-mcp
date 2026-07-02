@@ -1,10 +1,10 @@
-# Hướng dẫn sử dụng (người dùng cuối)
+# Hướng dẫn sử dụng
 
-conf-mcp là MCP server cho phép AI assistant (Claude Code, Claude Desktop, ...) đọc/ghi trực tiếp lên Confluence Server/Data Center của bạn.
+conf-mcp là MCP server cho phép AI assistant (Claude Code, Claude Desktop, ...) đọc/ghi trực tiếp lên Confluence của bạn.
 
 ## Yêu cầu
 
-- Một tài khoản Confluence Server/Data Center (username + password). Không hỗ trợ Confluence Cloud (dùng API token, cơ chế xác thực khác).
+- Một tài khoản Confluence Server/Data Center (username + password).
 - Node.js 18+.
 
 ## Cách 1: Chạy trực tiếp từ GitHub (không cần cài)
@@ -97,3 +97,7 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 - **Lỗi 401/403**: kiểm tra lại `CONFLUENCE_USERNAME`/`CONFLUENCE_PASSWORD`, tài khoản có quyền truy cập space không.
 - **Lỗi kết nối/timeout**: kiểm tra `CONFLUENCE_HOST` đúng định dạng (có `https://`, không có dấu `/` cuối), có VPN/mạng nội bộ cần thiết không.
 - **Không thấy log lỗi**: log server nằm ở stderr, kiểm tra output của MCP client (Claude Code/Desktop) thay vì stdout.
+
+---
+
+Được tạo bởi NamCP()[namcp@gem-corp.global]

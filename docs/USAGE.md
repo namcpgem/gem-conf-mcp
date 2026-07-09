@@ -66,17 +66,17 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 
 ## Danh sách công cụ (tools)
 
-| Tool                | Chức năng                                                        | Tham số chính                                             |
-| ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------- |
-| `get_page`          | Lấy chi tiết một trang theo ID                                   | `page_id`                                                 |
-| `get_page_by_title` | Lấy trang theo space key + tiêu đề chính xác                     | `space_key`, `title`                                      |
-| `create_page`       | Tạo trang mới                                                    | `space_key`, `title`, `body`, `parent_page_id` (tùy chọn) |
-| `update_page`       | Cập nhật trang (thay thế toàn bộ, tự tăng version)               | `page_id`, `title` (tùy chọn), `body` (tùy chọn)          |
-| `delete_page`       | Chuyển trang vào thùng rác (khôi phục được, không xóa vĩnh viễn) | `page_id`                                                 |
-| `search_pages`      | Tìm kiếm bằng CQL (Confluence Query Language)                    | `cql`, `limit`, `start`                                   |
-| `list_spaces`       | Liệt kê space, hoặc lấy 1 space theo key                         | `space_key` (tùy chọn), `limit`                           |
-| `add_comment`       | Thêm comment vào trang                                           | `page_id`, `body`                                         |
-| `get_comments`      | Lấy danh sách comment của trang                                  | `page_id`                                                 |
+| Tool                | Chức năng                                                        | Tham số chính                                                   |
+| ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| `get_page`          | Lấy chi tiết một trang theo ID                                   | `page_id`, `body_format`, `body_start`, `body_limit`            |
+| `get_page_by_title` | Lấy trang theo space key + tiêu đề chính xác                     | `space_key`, `title`, `body_format`, `body_start`, `body_limit` |
+| `create_page`       | Tạo trang mới                                                    | `space_key`, `title`, `body`, `parent_page_id` (tùy chọn)       |
+| `update_page`       | Cập nhật trang (thay thế toàn bộ, tự tăng version)               | `page_id`, `title` (tùy chọn), `body` (tùy chọn)                |
+| `delete_page`       | Chuyển trang vào thùng rác (khôi phục được, không xóa vĩnh viễn) | `page_id`                                                       |
+| `search_pages`      | Tìm kiếm bằng CQL (Confluence Query Language)                    | `cql`, `limit`, `start`                                         |
+| `list_spaces`       | Liệt kê space, hoặc lấy 1 space theo key                         | `space_key` (tùy chọn), `limit`                                 |
+| `add_comment`       | Thêm comment vào trang                                           | `page_id`, `body`                                               |
+| `get_comments`      | Lấy danh sách comment của trang                                  | `page_id`                                                       |
 
 ### Lưu ý quan trọng
 
@@ -84,6 +84,7 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 - `update_page` là full replace — nếu chỉ muốn đổi tiêu đề, có thể bỏ qua `body` để giữ nguyên nội dung cũ (và ngược lại).
 - `delete_page` chỉ chuyển vào trash, có thể khôi phục từ giao diện Confluence.
 - `search_pages` dùng cú pháp CQL, ví dụ: `type=page AND space=ENG AND title~"deploy"`.
+- Với trang lớn, `get_page`/`get_page_by_title` mặc định chỉ trả tối đa 40000 ký tự body (tránh vượt giới hạn token). Dùng `body_format`: `storage` (mặc định, XHTML) | `view` (HTML đã render) | `none` (chỉ metadata). Đọc từng phần bằng `body_start` + `body_limit`; xem cờ `truncated` trong kết quả để biết còn nội dung.
 
 ## Ví dụ prompt cho AI assistant
 

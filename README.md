@@ -100,8 +100,8 @@ Adjust the path in `args` to wherever you extracted the release zip. For local d
 
 | Tool                | Description                                                                                    |
 | ------------------- | ---------------------------------------------------------------------------------------------- |
-| `get_page`          | Get full details of a Confluence page by its numeric content ID                                |
-| `get_page_by_title` | Get a Confluence page by its space key and exact title                                         |
+| `get_page`          | Get full details of a Confluence page by its numeric content ID (supports body pagination)     |
+| `get_page_by_title` | Get a Confluence page by its space key and exact title (supports body pagination)              |
 | `create_page`       | Create a new Confluence page (body must be storage format XHTML, not Markdown)                 |
 | `update_page`       | Update a page — full replace, auto-increments version; omit body/title to keep existing values |
 | `delete_page`       | Move a page to trash (recoverable, does not permanently purge)                                 |
@@ -113,4 +113,5 @@ Adjust the path in `args` to wherever you extracted the release zip. For local d
 ## Notes
 
 - Confluence Server REST API uses storage format (XHTML) for `body`, not Markdown or ADF
+- `get_page` / `get_page_by_title` cap the body at 40000 characters by default to avoid exceeding tool-output token limits. Control it with `body_format` (`storage` | `view` | `none`) and paginate large pages via `body_start` + `body_limit`; the response includes `body_length` and a `truncated` flag
 - All logs go to stderr; stdout is reserved for MCP protocol

@@ -77,6 +77,7 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 | `list_spaces`       | Liệt kê space, hoặc lấy 1 space theo key                         | `space_key` (tùy chọn), `limit`                                 |
 | `add_comment`       | Thêm comment vào trang                                           | `page_id`, `body`                                               |
 | `get_comments`      | Lấy danh sách comment của trang                                  | `page_id`                                                       |
+| `get_user`          | Tra tên hiển thị + hồ sơ user từ userKey hoặc username           | `key` hoặc `username`                                           |
 
 ### Lưu ý quan trọng
 
@@ -101,4 +102,4 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 
 ---
 
-Được tạo bởi NamCP()[namcp@gem-corp.global]
+Được tạo bởi [NamCP](namcp@gem-corp.global)

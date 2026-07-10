@@ -6,6 +6,7 @@ import {registerDeletePage} from "./tools/delete-page.js";
 import {registerGetComments} from "./tools/get-comments.js";
 import {registerGetPage} from "./tools/get-page.js";
 import {registerGetPageByTitle} from "./tools/get-page-by-title.js";
+import {registerGetUser} from "./tools/get-user.js";
 import {registerListSpaces} from "./tools/list-spaces.js";
 import {registerSearchPages} from "./tools/search-pages.js";
 import {registerUpdatePage} from "./tools/update-page.js";
@@ -19,6 +20,7 @@ registerDeletePage(server);
 registerGetPageByTitle(server);
 registerSearchPages(server);
 registerListSpaces(server);
+registerGetUser(server);
 registerAddComment(server);
 registerGetComments(server);
 

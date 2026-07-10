@@ -109,6 +109,7 @@ Adjust the path in `args` to wherever you extracted the release zip. For local d
 | `list_spaces`       | List Confluence spaces, or fetch a single space by key                                         |
 | `add_comment`       | Add a comment to a page (storage format XHTML, not Markdown)                                   |
 | `get_comments`      | Get comments on a page                                                                         |
+| `get_user`          | Resolve a user's display name and profile from a userKey or username                           |
 
 ## Notes
 

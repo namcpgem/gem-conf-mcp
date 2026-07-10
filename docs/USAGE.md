@@ -1,6 +1,6 @@
 # Hướng dẫn sử dụng
 
-conf-mcp là MCP server cho phép AI assistant (Claude Code, Claude Desktop, ...) đọc/ghi trực tiếp lên Confluence của bạn.
+Confluence mcp là MCP server cho phép AI assistant (Claude Code, Claude Desktop, ...) đọc/ghi trực tiếp lên Confluence của bạn.
 
 ## Yêu cầu
 

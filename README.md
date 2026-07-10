@@ -1,66 +1,13 @@
 # Confluence mcp
 
-MCP server for Confluence Server/Data Center (REST API). Written in Node.js ESM.
-
-See [docs/USAGE.md](docs/USAGE.md) for end-user setup (Vietnamese) and [docs/RELEASE.md](docs/RELEASE.md) for the release process (Vietnamese).
+MCP server for Confluence. Lets an AI assistant (Claude Code, Claude Desktop, ...) read and write your Confluence directly.
 
 ## Requirements
 
-- Node.js 18+
-- Access to a Confluence Server or Data Center instance
+- A Confluence account (username + password).
+- Node.js 18+.
 
-## Setup
-
-```bash
-pnpm install
-cp .env.example .env
-# edit .env with your credentials
-```
-
-## Install from GitHub
-
-```bash
-npx github:namcpgem/gem-conf-mcp
-```
-
-Runs directly from the repo, no npm publish needed. npm runs the `prepare` script on install to build `dist/index.js`. Requires the repo to be public.
-
-## Environment variables
-
-| Variable              | Required | Description                               |
-| --------------------- | -------- | ----------------------------------------- |
-| `CONFLUENCE_HOST`     | yes      | Base URL, e.g. `https://conf.company.com` |
-| `CONFLUENCE_USERNAME` | yes      | Confluence username                       |
-| `CONFLUENCE_PASSWORD` | yes      | Confluence password                       |
-
-## Build
-
-```bash
-pnpm build
-```
-
-Bundles the server into a single file at `dist/index.js` (via esbuild).
-
-## Release
-
-```bash
-pnpm release
-```
-
-Builds the server and packages it into `release/conf-mcp-v<version>.zip`, containing:
-
-- `index.js` — bundled server, no `node_modules` required
-- `package.json` — name/version reference
-- `README.md`
-- `.env.example`
-
-### Using the release zip (end users)
-
-1. Extract `conf-mcp-v<version>.zip` to a folder, e.g. `C:\tools\conf-mcp`
-2. Copy `.env.example` to `.env` in that folder and fill in your Confluence credentials, **or** set the env vars directly in your MCP client config (see below)
-3. Point your MCP client at the extracted `index.js` — no `npm install`/`pnpm install` needed, the file is self-contained
-
-## Claude Code config
+## Quick start
 
 Add to `.claude/settings.json` (or `claude_desktop_config.json`):
 
@@ -69,7 +16,7 @@ Add to `.claude/settings.json` (or `claude_desktop_config.json`):
   "mcpServers": {
     "conf-mcp": {
       "command": "npx",
-      "args": ["-y", "github:namcpgem/gem-conf-mcp"],
+      "args": ["-y", "conf-mcp@latest"],
       "env": {
         "CONFLUENCE_HOST": "https://conf.company.com",
         "CONFLUENCE_USERNAME": "your_username",
@@ -80,39 +27,80 @@ Add to `.claude/settings.json` (or `claude_desktop_config.json`):
 }
 ```
 
-If using the release zip or running from source instead:
+Restart Claude Code/Desktop after editing the config.
 
-```json
-{
-  "mcpServers": {
-    "conf-mcp": {
-      "command": "node",
-      "args": ["/path/to/conf-mcp/dist/index.js"],
-      "env": { "...": "..." }
-    }
-  }
-}
-```
+## Environment variables
 
-Adjust the path in `args` to wherever you extracted the release zip. For local development from source, point `args` at `src/index.js` instead.
+| Variable              | Required | Description                               |
+| --------------------- | -------- | ----------------------------------------- |
+| `CONFLUENCE_HOST`     | yes      | Base URL, e.g. `https://conf.company.com` |
+| `CONFLUENCE_USERNAME` | yes      | Confluence username                       |
+| `CONFLUENCE_PASSWORD` | yes      | Confluence password                       |
 
 ## Tools
 
-| Tool                | Description                                                                                    |
-| ------------------- | ---------------------------------------------------------------------------------------------- |
-| `get_page`          | Get full details of a Confluence page by its numeric content ID (supports body pagination)     |
-| `get_page_by_title` | Get a Confluence page by its space key and exact title (supports body pagination)              |
-| `create_page`       | Create a new Confluence page (body must be storage format XHTML, not Markdown)                 |
-| `update_page`       | Update a page — full replace, auto-increments version; omit body/title to keep existing values |
-| `delete_page`       | Move a page to trash (recoverable, does not permanently purge)                                 |
-| `search_pages`      | Search Confluence content using CQL (Confluence Query Language)                                |
-| `list_spaces`       | List Confluence spaces, or fetch a single space by key                                         |
-| `add_comment`       | Add a comment to a page (storage format XHTML, not Markdown)                                   |
-| `get_comments`      | Get comments on a page                                                                         |
-| `get_user`          | Resolve a user's display name and profile from a userKey or username                           |
+| Tool                | Description                                                     | Key parameters                                                  |
+| ------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
+| `get_page`          | Get a page by numeric content ID                                | `page_id`, `body_format`, `body_start`, `body_limit`            |
+| `get_page_by_title` | Get a page by space key + exact title                           | `space_key`, `title`, `body_format`, `body_start`, `body_limit` |
+| `create_page`       | Create a new page                                               | `space_key`, `title`, `body`, `parent_page_id` (optional)       |
+| `update_page`       | Update a page (full replace, auto-increments version)           | `page_id`, `title` (optional), `body` (optional)                |
+| `delete_page`       | Move a page to trash (recoverable, not permanently purged)      | `page_id`                                                       |
+| `search_pages`      | Search content using CQL (Confluence Query Language)            | `cql`, `limit`, `start`                                         |
+| `list_spaces`       | List spaces, or fetch a single space by key                     | `space_key` (optional), `limit`                                 |
+| `add_comment`       | Add a comment to a page                                         | `page_id`, `body`                                               |
+| `get_comments`      | Get comments on a page                                          | `page_id`                                                       |
+| `get_user`          | Resolve a user's display name and profile from userKey/username | `key` or `username`                                             |
 
-## Notes
+### Notes
 
-- Confluence Server REST API uses storage format (XHTML) for `body`, not Markdown or ADF
-- `get_page` / `get_page_by_title` cap the body at 40000 characters by default to avoid exceeding tool-output token limits. Control it with `body_format` (`storage` | `view` | `none`) and paginate large pages via `body_start` + `body_limit`; the response includes `body_length` and a `truncated` flag
-- All logs go to stderr; stdout is reserved for MCP protocol
+- Page `body` and comment `body` must be in Confluence storage format (XHTML), not Markdown. Example: `<p>Content</p>`, `<ul><li>Item 1</li></ul>`.
+- `update_page` is a full replace — to change only the title, omit `body` to keep the existing content (and vice versa).
+- `delete_page` only moves the page to trash; you can restore it from the Confluence UI.
+- `search_pages` uses CQL syntax, e.g. `type=page AND space=ENG AND title~"deploy"`.
+- For large pages, `get_page`/`get_page_by_title` return at most 40000 characters of body by default (to avoid exceeding tool-output token limits). Control with `body_format`: `storage` (default, XHTML) | `view` (rendered HTML) | `none` (metadata only). Page through large bodies with `body_start` + `body_limit`; check the `truncated` flag in the result.
+- All logs go to stderr; stdout is reserved for the MCP protocol.
+
+## Example prompts
+
+- "Find pages in space ENG whose title contains 'deploy'"
+- "Create a new page in space ENG titled 'Release notes v2.0' with content ..."
+- "Update page 123456, change the title to 'Release notes v2.1'"
+- "Add a comment to page 123456: 'Review done'"
+
+## Troubleshooting
+
+- 401/403: recheck `CONFLUENCE_USERNAME`/`CONFLUENCE_PASSWORD` and whether the account can access the space.
+- Connection/timeout: verify `CONFLUENCE_HOST` format (starts with `https://`, no trailing `/`), and whether VPN/internal network is required.
+- No error logs: server logs go to stderr — check the MCP client (Claude Code/Desktop) output, not stdout.
+
+## Alternatives
+
+Run directly from GitHub without npm:
+
+```json
+"args": ["-y", "github:namcpgem/gem-conf-mcp"]
+```
+
+Or point at a local build:
+
+```json
+{
+  "command": "node",
+  "args": ["/path/to/conf-mcp/dist/index.js"],
+  "env": { "...": "..." }
+}
+```
+
+## Development
+
+```bash
+pnpm install
+cp .env.example .env   # edit with your credentials
+pnpm build             # bundle to dist/index.js via esbuild
+pnpm release           # build + package release/conf-mcp-v<version>.zip
+```
+
+---
+
+Created by [NamCP](mailto:namcp@gem-corp.global)

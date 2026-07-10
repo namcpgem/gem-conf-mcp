@@ -1,12 +1,15 @@
 {
   "name": "conf-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for Confluence Server/Data Center (REST API)",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "conf-mcp": "dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/namcpgem/gem-conf-mcp.git"

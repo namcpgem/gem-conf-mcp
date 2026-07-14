@@ -11,7 +11,7 @@ Always sync every file: README.md plus every `*.md` under docs/ (glob it — do 
 
 ## Sources of truth
 
-- src/tools/*.js — each tool's `registerTool` name, `description`, and `inputSchema` (param names + `.describe()` text + which are `.optional()`)
+- src/tools/\*.js — each tool's `registerTool` name, `description`, and `inputSchema` (param names + `.describe()` text + which are `.optional()`)
 - src/markdown.js — `body_format` values ("storage" | "markdown") and the conversion contract
 - src/index.js — which tools are registered (completeness + order)
 - src/page-body.js — read-side `body_format` (storage | view | none), `body_start`, `body_limit`, truncation
@@ -29,7 +29,7 @@ Glob `docs/*.md` and always include README.md. Update every file found. Known fi
 
 ## Steps
 
-1. Glob src/tools/*.js and read each. Extract tool name, one-line description, and the actual inputSchema keys (mark optional ones).
+1. Glob src/tools/\*.js and read each. Extract tool name, one-line description, and the actual inputSchema keys (mark optional ones).
 2. Read src/markdown.js and src/page-body.js for the current write/read `body_format` behavior.
 3. Rebuild the Tools table (tool | description | key params) in README.md and docs/USAGE.md straight from the schema — never invent params.
 4. Update Notes to match current behavior: write `body_format` markdown vs storage default, the macro limitation (Markdown cannot express code/panel/expand/TOC macros — use storage), read-side pagination + `truncated`.
@@ -38,7 +38,7 @@ Glob `docs/*.md` and always include README.md. Update every file found. Known fi
 
 ## Rules
 
-- Preserve each file's language: README.md English, docs/* Vietnamese.
+- Preserve each file's language: README.md English, docs/\* Vietnamese.
 - Preserve existing heading structure and each file's existing formatting style.
 - No new tools or params that do not exist in source.
 - No bold/italic in markdown you add, unless that file already uses it consistently.

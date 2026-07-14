@@ -109,7 +109,7 @@ pnpm install
 cp .env.example .env   # edit with your credentials
 pnpm build             # bundle to dist/index.js via esbuild
 pnpm lint              # biome check + tsc
-pnpm release           # release-it: bumps version, commits, tags, pushes, publishes to npm (runs lint + build first, no pre-commit needed)
+pnpm release           # release-it: bumps version, commits, tags, pushes (runs lint + build first, no pre-commit needed)
 pnpm archive           # package release/conf-mcp-v<version>.zip
 ```
 

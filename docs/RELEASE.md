@@ -15,13 +15,12 @@
    ```
 
    Lệnh này chạy release-it với các bước tự động:
-   - Chạy `npm run lint` + `npm run build` trước tiên
+   - Chạy `pnpm run lint` + `pnpm run build` trước tiên
    - Hỏi phiên bản mới (bump tự động)
    - Commit thay đổi với message "chore: release v${version}"
    - Tạo git tag "v${version}"
    - Push commit và tag
    - Tạo release trên GitHub
-   - Publish lên npm
 
    Không cần commit hay thao tác git trước `pnpm release`; release-it tự xử lý.
 
@@ -49,11 +48,11 @@
 
 ## Kênh phát hành
 
-Release-it tự động xử lý npm publish trong quá trình `pnpm release`. Các kênh cài đặt cho người dùng:
+Các kênh cài đặt cho người dùng:
 
 ### 1. npm (khuyến nghị)
 
-Khi chạy `pnpm release`, release-it tự publish lên npm (xem config `npm.publish: true` trong `.release-it.json`).
+Khi chạy `pnpm release`, release-it thực hiện commit, tag, push. Cấu hình `.release-it.json` có `npm.publish: false` — npm publishing không được thực hiện tự động ở bước này.
 
 Người dùng cài qua: `npx conf-mcp@latest` hoặc `npm i -g conf-mcp`.
 
@@ -75,7 +74,7 @@ Khi cài từ git, npm tự chạy script `prepare` (cấu hình `"prepare": "np
 
 ### 3. Zip thủ công (release/conf-mcp-v<version>.zip)
 
-Sau khi release-it publish xong, chạy `pnpm archive` để đóng gói zip cho người dùng không có npm/git, xem [Hướng dẫn sử dụng](USAGE.md#cài-đặt-từ-file-zip-release).
+Sau khi chạy `pnpm release` xong, chạy `pnpm archive` để đóng gói zip cho người dùng không có npm/git, xem [Hướng dẫn sử dụng](USAGE.md#cài-đặt-từ-file-zip-release).
 
 ## Checklist trước khi chạy `pnpm release`
 
@@ -87,4 +86,4 @@ Release-it sẽ tự động:
 
 - [ ] Chạy lint và build
 - [ ] Bump version trong `package.json`
-- [ ] Commit, tag, push, publish npm
+- [ ] Commit, tag, push, tạo GitHub release

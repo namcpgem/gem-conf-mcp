@@ -5,6 +5,7 @@
       "source": {
         "organizeImports": "on",
         "useSortedAttributes": "on",
+        "useSortedInterfaceMembers": "on",
         "useSortedKeys": "on",
         "useSortedProperties": "on"
       }
@@ -18,13 +19,11 @@
       "!**/.env*",
       "!**/.git",
       "!**/.next",
-      "!**/app/globals.css",
+      "!**/*.md",
       "!**/dist",
       "!**/node_modules",
       "!**/package-lock.json",
-      "!**/package.json",
-      "!**/pnpm-lock.yaml",
-      "!**/README.md"
+      "!**/pnpm-lock.yaml"
     ]
   },
   "formatter": {
@@ -62,6 +61,9 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "nursery": {
+        "useSortedClasses": "error"
+      },
       "performance": {
         "noBarrelFile": "error",
         "noReExportAll": "error"

@@ -7,28 +7,16 @@ Confluence mcp là MCP server cho phép AI assistant (Claude Code, Claude Deskto
 - Một tài khoản Confluence Server/Data Center (username + password).
 - Node.js 18+.
 
-## Cách 1: Chạy trực tiếp từ GitHub (không cần cài)
+## Cách 1: Dùng Claude Code CLI (khuyến nghị)
 
 ```bash
-npx github:namcpgem/gem-conf-mcp
+claude mcp add conf-mcp npx -y conf-mcp@latest \
+  --env CONFLUENCE_HOST="https://conf.company.com" \
+  --env CONFLUENCE_USERNAME="your_username" \
+  --env CONFLUENCE_PASSWORD="your_password"
 ```
 
-## Cách 2: Cài đặt từ file zip release
-
-1. Tải `conf-mcp-v<version>.zip` từ trang release.
-2. Giải nén vào một thư mục, ví dụ `C:\tools\conf-mcp`.
-3. Copy `.env.example` thành `.env` trong thư mục đó và điền thông tin Confluence (hoặc khai báo env trực tiếp trong config MCP client, xem bên dưới).
-4. Không cần `npm install` — file `index.js` đã tự chứa toàn bộ dependencies.
-
-## Cấu hình biến môi trường
-
-| Biến                  | Bắt buộc | Mô tả                                     |
-| --------------------- | -------- | ----------------------------------------- |
-| `CONFLUENCE_HOST`     | có       | URL gốc, ví dụ `https://conf.company.com` |
-| `CONFLUENCE_USERNAME` | có       | Tên đăng nhập Confluence                  |
-| `CONFLUENCE_PASSWORD` | có       | Mật khẩu Confluence                       |
-
-## Kết nối vào Claude Code / Claude Desktop
+## Cách 2: Cấu hình thủ công
 
 Thêm vào `.claude/settings.json` (hoặc `claude_desktop_config.json`):
 
@@ -37,7 +25,7 @@ Thêm vào `.claude/settings.json` (hoặc `claude_desktop_config.json`):
   "mcpServers": {
     "conf-mcp": {
       "command": "npx",
-      "args": ["-y", "github:namcpgem/gem-conf-mcp"],
+      "args": ["-y", "conf-mcp@latest"],
       "env": {
         "CONFLUENCE_HOST": "https://conf.company.com",
         "CONFLUENCE_USERNAME": "your_username",
@@ -48,7 +36,28 @@ Thêm vào `.claude/settings.json` (hoặc `claude_desktop_config.json`):
 }
 ```
 
-Nếu chạy từ file zip đã giải nén:
+Khởi động lại Claude Code/Desktop sau khi sửa config.
+
+## Cách 3: Chạy từ GitHub (không cần npm)
+
+```json
+{
+  "mcpServers": {
+    "conf-mcp": {
+      "command": "npx",
+      "args": ["-y", "github:namcpgem/gem-conf-mcp"],
+      "env": { "...": "..." }
+    }
+  }
+}
+```
+
+## Cách 4: Cài đặt từ file zip release
+
+1. Tải `conf-mcp-v<version>.zip` từ trang release.
+2. Giải nén vào một thư mục, ví dụ `C:\tools\conf-mcp`.
+3. Copy `.env.example` thành `.env` trong thư mục đó và điền thông tin Confluence (hoặc khai báo env trực tiếp trong config MCP client).
+4. Không cần `npm install` — file `index.js` đã tự chứa toàn bộ dependencies.
 
 ```json
 {
@@ -62,22 +71,28 @@ Nếu chạy từ file zip đã giải nén:
 }
 ```
 
-Khởi động lại Claude Code/Desktop sau khi sửa config.
+## Cấu hình biến môi trường
+
+| Biến                  | Bắt buộc | Mô tả                                     |
+| --------------------- | -------- | ----------------------------------------- |
+| `CONFLUENCE_HOST`     | có       | URL gốc, ví dụ `https://conf.company.com` |
+| `CONFLUENCE_USERNAME` | có       | Tên đăng nhập Confluence                  |
+| `CONFLUENCE_PASSWORD` | có       | Mật khẩu Confluence                       |
 
 ## Danh sách công cụ (tools)
 
-| Tool                | Chức năng                                                        | Tham số chính                                                   |
-| ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
-| `get_page`          | Lấy chi tiết một trang theo ID                                   | `page_id`, `body_format`, `body_start`, `body_limit`            |
-| `get_page_by_title` | Lấy trang theo space key + tiêu đề chính xác                     | `space_key`, `title`, `body_format`, `body_start`, `body_limit` |
-| `create_page`       | Tạo trang mới                                                    | `space_key`, `title`, `body`, `body_format` (tùy chọn), `parent_page_id` (tùy chọn) |
-| `update_page`       | Cập nhật trang (thay thế toàn bộ, tự tăng version)               | `page_id`, `title` (tùy chọn), `body` (tùy chọn), `body_format` (tùy chọn) |
-| `delete_page`       | Chuyển trang vào thùng rác (khôi phục được, không xóa vĩnh viễn) | `page_id`                                                       |
-| `search_pages`      | Tìm kiếm bằng CQL (Confluence Query Language)                    | `cql`, `limit`, `start`                                         |
-| `list_spaces`       | Liệt kê space, hoặc lấy 1 space theo key                         | `space_key` (tùy chọn), `limit`                                 |
-| `add_comment`       | Thêm comment vào trang                                           | `page_id`, `body`                                               |
-| `get_comments`      | Lấy danh sách comment của trang                                  | `page_id`                                                       |
-| `get_user`          | Tra tên hiển thị + hồ sơ user từ userKey hoặc username           | `key` hoặc `username`                                           |
+| Tool                | Chức năng                                                        | Tham số chính                                                                                    |
+| ------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `get_page`          | Lấy chi tiết một trang theo ID                                   | `page_id`, `body_format` (tùy chọn), `body_start` (tùy chọn), `body_limit` (tùy chọn)            |
+| `get_page_by_title` | Lấy trang theo space key + tiêu đề chính xác                     | `space_key`, `title`, `body_format` (tùy chọn), `body_start` (tùy chọn), `body_limit` (tùy chọn) |
+| `create_page`       | Tạo trang mới                                                    | `space_key`, `title`, `body`, `body_format` (tùy chọn), `parent_page_id` (tùy chọn)              |
+| `update_page`       | Cập nhật trang (thay thế toàn bộ, tự tăng version)               | `page_id`, `title` (tùy chọn), `body` (tùy chọn), `body_format` (tùy chọn)                       |
+| `delete_page`       | Chuyển trang vào thùng rác (khôi phục được, không xóa vĩnh viễn) | `page_id`                                                                                        |
+| `search_pages`      | Tìm kiếm bằng CQL (Confluence Query Language)                    | `cql`, `limit` (tùy chọn), `start` (tùy chọn)                                                    |
+| `list_spaces`       | Liệt kê space, hoặc lấy 1 space theo key                         | `space_key` (tùy chọn), `limit` (tùy chọn)                                                       |
+| `add_comment`       | Thêm comment vào trang                                           | `page_id`, `body`                                                                                |
+| `get_comments`      | Lấy danh sách comment của trang                                  | `page_id`                                                                                        |
+| `get_user`          | Tra tên hiển thị + hồ sơ user từ userKey hoặc username           | `key` hoặc `username`                                                                            |
 
 ### Lưu ý quan trọng
 

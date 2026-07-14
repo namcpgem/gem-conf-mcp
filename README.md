@@ -9,7 +9,16 @@ MCP server for Confluence. Lets an AI assistant (Claude Code, Claude Desktop, ..
 
 ## Quick start
 
-Add to `.claude/settings.json` (or `claude_desktop_config.json`):
+Use Claude Code CLI:
+
+```bash
+claude mcp add conf-mcp npx -y conf-mcp@latest \
+  --env CONFLUENCE_HOST="https://conf.company.com" \
+  --env CONFLUENCE_USERNAME="your_username" \
+  --env CONFLUENCE_PASSWORD="your_password"
+```
+
+Or manually add to `.claude/settings.json` (or `claude_desktop_config.json`):
 
 ```json
 {
@@ -39,18 +48,18 @@ Restart Claude Code/Desktop after editing the config.
 
 ## Tools
 
-| Tool                | Description                                                     | Key parameters                                                                      |
-| ------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `get_page`          | Get a page by numeric content ID                                | `page_id`, `body_format`, `body_start`, `body_limit`                                |
-| `get_page_by_title` | Get a page by space key + exact title                           | `space_key`, `title`, `body_format`, `body_start`, `body_limit`                     |
-| `create_page`       | Create a new page                                               | `space_key`, `title`, `body`, `body_format` (optional), `parent_page_id` (optional) |
-| `update_page`       | Update a page (full replace, auto-increments version)           | `page_id`, `title` (optional), `body` (optional), `body_format` (optional)          |
-| `delete_page`       | Move a page to trash (recoverable, not permanently purged)      | `page_id`                                                                           |
-| `search_pages`      | Search content using CQL (Confluence Query Language)            | `cql`, `limit`, `start`                                                             |
-| `list_spaces`       | List spaces, or fetch a single space by key                     | `space_key` (optional), `limit`                                                     |
-| `add_comment`       | Add a comment to a page                                         | `page_id`, `body`                                                                   |
-| `get_comments`      | Get comments on a page                                          | `page_id`                                                                           |
-| `get_user`          | Resolve a user's display name and profile from userKey/username | `key` or `username`                                                                 |
+| Tool                | Description                                                     | Key parameters                                                                                   |
+| ------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `get_page`          | Get a page by numeric content ID                                | `page_id`, `body_format` (optional), `body_start` (optional), `body_limit` (optional)            |
+| `get_page_by_title` | Get a page by space key + exact title                           | `space_key`, `title`, `body_format` (optional), `body_start` (optional), `body_limit` (optional) |
+| `create_page`       | Create a new page                                               | `space_key`, `title`, `body`, `body_format` (optional), `parent_page_id` (optional)              |
+| `update_page`       | Update a page (full replace, auto-increments version)           | `page_id`, `title` (optional), `body` (optional), `body_format` (optional)                       |
+| `delete_page`       | Move a page to trash (recoverable, not permanently purged)      | `page_id`                                                                                        |
+| `search_pages`      | Search content using CQL (Confluence Query Language)            | `cql`, `limit` (optional), `start` (optional)                                                    |
+| `list_spaces`       | List spaces, or fetch a single space by key                     | `space_key` (optional), `limit` (optional)                                                       |
+| `add_comment`       | Add a comment to a page                                         | `page_id`, `body`                                                                                |
+| `get_comments`      | Get comments on a page                                          | `page_id`                                                                                        |
+| `get_user`          | Resolve a user's display name and profile from userKey/username | `key` or `username`                                                                              |
 
 ### Notes
 
@@ -99,7 +108,9 @@ Or point at a local build:
 pnpm install
 cp .env.example .env   # edit with your credentials
 pnpm build             # bundle to dist/index.js via esbuild
-pnpm release           # build + package release/conf-mcp-v<version>.zip
+pnpm lint              # biome check + tsc
+pnpm release           # release-it: bumps version, commits, tags, pushes, publishes to npm (runs lint + build first, no pre-commit needed)
+pnpm archive           # package release/conf-mcp-v<version>.zip
 ```
 
 ## Support

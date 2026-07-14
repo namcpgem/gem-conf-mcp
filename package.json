@@ -1,6 +1,6 @@
 {
   "name": "conf-mcp",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "MCP server for Confluence Server/Data Center (REST API)",
   "type": "module",
   "main": "dist/index.js",
@@ -25,11 +25,12 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "dotenv": "^16.6.1",
+    "markdown-it": "^14.3.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.1",
-    "@types/node": "^26.0.1",
+    "@biomejs/biome": "^2.5.3",
+    "@types/node": "^26.1.1",
     "archiver": "^8.0.0",
     "esbuild": "^0.28.1",
     "typescript": "^6.0.3"

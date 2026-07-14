@@ -43,8 +43,8 @@ Restart Claude Code/Desktop after editing the config.
 | ------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | `get_page`          | Get a page by numeric content ID                                | `page_id`, `body_format`, `body_start`, `body_limit`            |
 | `get_page_by_title` | Get a page by space key + exact title                           | `space_key`, `title`, `body_format`, `body_start`, `body_limit` |
-| `create_page`       | Create a new page                                               | `space_key`, `title`, `body`, `parent_page_id` (optional)       |
-| `update_page`       | Update a page (full replace, auto-increments version)           | `page_id`, `title` (optional), `body` (optional)                |
+| `create_page`       | Create a new page                                               | `space_key`, `title`, `body`, `body_format` (optional), `parent_page_id` (optional) |
+| `update_page`       | Update a page (full replace, auto-increments version)           | `page_id`, `title` (optional), `body` (optional), `body_format` (optional) |
 | `delete_page`       | Move a page to trash (recoverable, not permanently purged)      | `page_id`                                                       |
 | `search_pages`      | Search content using CQL (Confluence Query Language)            | `cql`, `limit`, `start`                                         |
 | `list_spaces`       | List spaces, or fetch a single space by key                     | `space_key` (optional), `limit`                                 |
@@ -54,7 +54,8 @@ Restart Claude Code/Desktop after editing the config.
 
 ### Notes
 
-- Page `body` and comment `body` must be in Confluence storage format (XHTML), not Markdown. Example: `<p>Content</p>`, `<ul><li>Item 1</li></ul>`.
+- Page `body` (create_page/update_page): pass Markdown with `body_format='markdown'` (auto-converted server-side) or raw Confluence storage format (XHTML) by default. Storage format required for Confluence macros (code, panel, expand, TOC) which Markdown cannot express. Example storage: `<p>Content</p>`, `<ul><li>Item 1</li></ul>`.
+- Comment `body` (add_comment): must be Confluence storage format (XHTML) only.
 - `update_page` is a full replace — to change only the title, omit `body` to keep the existing content (and vice versa).
 - `delete_page` only moves the page to trash; you can restore it from the Confluence UI.
 - `search_pages` uses CQL syntax, e.g. `type=page AND space=ENG AND title~"deploy"`.

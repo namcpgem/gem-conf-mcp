@@ -70,8 +70,8 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 | ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
 | `get_page`          | Lấy chi tiết một trang theo ID                                   | `page_id`, `body_format`, `body_start`, `body_limit`            |
 | `get_page_by_title` | Lấy trang theo space key + tiêu đề chính xác                     | `space_key`, `title`, `body_format`, `body_start`, `body_limit` |
-| `create_page`       | Tạo trang mới                                                    | `space_key`, `title`, `body`, `parent_page_id` (tùy chọn)       |
-| `update_page`       | Cập nhật trang (thay thế toàn bộ, tự tăng version)               | `page_id`, `title` (tùy chọn), `body` (tùy chọn)                |
+| `create_page`       | Tạo trang mới                                                    | `space_key`, `title`, `body`, `body_format` (tùy chọn), `parent_page_id` (tùy chọn) |
+| `update_page`       | Cập nhật trang (thay thế toàn bộ, tự tăng version)               | `page_id`, `title` (tùy chọn), `body` (tùy chọn), `body_format` (tùy chọn) |
 | `delete_page`       | Chuyển trang vào thùng rác (khôi phục được, không xóa vĩnh viễn) | `page_id`                                                       |
 | `search_pages`      | Tìm kiếm bằng CQL (Confluence Query Language)                    | `cql`, `limit`, `start`                                         |
 | `list_spaces`       | Liệt kê space, hoặc lấy 1 space theo key                         | `space_key` (tùy chọn), `limit`                                 |
@@ -81,7 +81,8 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 
 ### Lưu ý quan trọng
 
-- `body` của trang và comment phải ở **Confluence storage format (XHTML)**, không phải Markdown. Ví dụ: `<p>Nội dung</p>`, `<ul><li>Mục 1</li></ul>`.
+- **Body trang** (create_page/update_page): gửi Markdown với `body_format='markdown'` (tự convert server-side) hoặc raw Confluence storage format (XHTML) theo mặc định. Cần storage format để dùng Confluence macros (code, panel, expand, TOC) mà Markdown không thể biểu hiện. Ví dụ storage: `<p>Nội dung</p>`, `<ul><li>Mục 1</li></ul>`.
+- **Body comment** (add_comment): phải là **Confluence storage format (XHTML)** chỉ.
 - `update_page` là full replace — nếu chỉ muốn đổi tiêu đề, có thể bỏ qua `body` để giữ nguyên nội dung cũ (và ngược lại).
 - `delete_page` chỉ chuyển vào trash, có thể khôi phục từ giao diện Confluence.
 - `search_pages` dùng cú pháp CQL, ví dụ: `type=page AND space=ENG AND title~"deploy"`.

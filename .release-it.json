@@ -4,6 +4,7 @@
     "commitMessage": "chore: release v${version}",
     "push": true,
     "pushTags": true,
+    "requireCleanWorkingDir": true,
     "tag": true,
     "tagName": "v${version}"
   },

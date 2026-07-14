@@ -17,6 +17,6 @@
   },
   "npm": {
     "allowSameVersion": false,
-    "publish": false
+    "publish": true
   }
 }

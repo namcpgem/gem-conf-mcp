@@ -87,6 +87,7 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 | `get_page_by_title` | Lấy trang theo space key + tiêu đề chính xác                     | `space_key`, `title`, `body_format` (tùy chọn), `body_start` (tùy chọn), `body_limit` (tùy chọn) |
 | `create_page`       | Tạo trang mới                                                    | `space_key`, `title`, `body`, `body_format` (tùy chọn), `parent_page_id` (tùy chọn)              |
 | `update_page`       | Cập nhật trang (thay thế toàn bộ, tự tăng version)               | `page_id`, `title` (tùy chọn), `body` (tùy chọn), `body_format` (tùy chọn)                       |
+| `patch_page`        | Thay thế một chuỗi con trong trang (storage format chỉ)          | `page_id`, `old_string`, `new_string`                                                            |
 | `delete_page`       | Chuyển trang vào thùng rác (khôi phục được, không xóa vĩnh viễn) | `page_id`                                                                                        |
 | `search_pages`      | Tìm kiếm bằng CQL (Confluence Query Language)                    | `cql`, `limit` (tùy chọn), `start` (tùy chọn)                                                    |
 | `list_spaces`       | Liệt kê space, hoặc lấy 1 space theo key                         | `space_key` (tùy chọn), `limit` (tùy chọn)                                                       |
@@ -99,6 +100,7 @@ Khởi động lại Claude Code/Desktop sau khi sửa config.
 - **Body trang** (create_page/update_page): gửi Markdown với `body_format='markdown'` (tự convert server-side) hoặc raw Confluence storage format (XHTML) theo mặc định. Cần storage format để dùng Confluence macros (code, panel, expand, TOC) mà Markdown không thể biểu hiện. Ví dụ storage: `<p>Nội dung</p>`, `<ul><li>Mục 1</li></ul>`.
 - **Body comment** (add_comment): phải là **Confluence storage format (XHTML)** chỉ.
 - `update_page` là full replace — nếu chỉ muốn đổi tiêu đề, có thể bỏ qua `body` để giữ nguyên nội dung cũ (và ngược lại).
+- `patch_page` thay thế một chuỗi con trong storage format (XHTML) mà không cần gửi lại toàn bộ nội dung trang, hữu ích cho các sửa đổi nhỏ trên các trang lớn khi dùng `update_page` không thực tế. `old_string` phải khớp đúng 1 lần; báo lỗi nếu tìm thấy 0 hoặc >1 lần.
 - `delete_page` chỉ chuyển vào trash, có thể khôi phục từ giao diện Confluence.
 - `search_pages` dùng cú pháp CQL, ví dụ: `type=page AND space=ENG AND title~"deploy"`.
 - Với trang lớn, `get_page`/`get_page_by_title` mặc định chỉ trả tối đa 40000 ký tự body (tránh vượt giới hạn token). Dùng `body_format`: `storage` (mặc định, XHTML) | `view` (HTML đã render) | `none` (chỉ metadata). Đọc từng phần bằng `body_start` + `body_limit`; xem cờ `truncated` trong kết quả để biết còn nội dung.

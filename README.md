@@ -54,6 +54,7 @@ Restart Claude Code/Desktop after editing the config.
 | `get_page_by_title` | Get a page by space key + exact title                           | `space_key`, `title`, `body_format` (optional), `body_start` (optional), `body_limit` (optional) |
 | `create_page`       | Create a new page                                               | `space_key`, `title`, `body`, `body_format` (optional), `parent_page_id` (optional)              |
 | `update_page`       | Update a page (full replace, auto-increments version)           | `page_id`, `title` (optional), `body` (optional), `body_format` (optional)                       |
+| `patch_page`        | Replace a substring in a page (storage format only)             | `page_id`, `old_string`, `new_string`                                                            |
 | `delete_page`       | Move a page to trash (recoverable, not permanently purged)      | `page_id`                                                                                        |
 | `search_pages`      | Search content using CQL (Confluence Query Language)            | `cql`, `limit` (optional), `start` (optional)                                                    |
 | `list_spaces`       | List spaces, or fetch a single space by key                     | `space_key` (optional), `limit` (optional)                                                       |
@@ -66,6 +67,7 @@ Restart Claude Code/Desktop after editing the config.
 - Page `body` (create_page/update_page): pass Markdown with `body_format='markdown'` (auto-converted server-side) or raw Confluence storage format (XHTML) by default. Storage format required for Confluence macros (code, panel, expand, TOC) which Markdown cannot express. Example storage: `<p>Content</p>`, `<ul><li>Item 1</li></ul>`.
 - Comment `body` (add_comment): must be Confluence storage format (XHTML) only.
 - `update_page` is a full replace — to change only the title, omit `body` to keep the existing content (and vice versa).
+- `patch_page` replaces one exact substring in storage format (XHTML) without resending the full page body, useful for targeted edits to large pages where `update_page` is impractical. `old_string` must match exactly once; errors if found 0 or multiple times.
 - `delete_page` only moves the page to trash; you can restore it from the Confluence UI.
 - `search_pages` uses CQL syntax, e.g. `type=page AND space=ENG AND title~"deploy"`.
 - For large pages, `get_page`/`get_page_by_title` return at most 40000 characters of body by default (to avoid exceeding tool-output token limits). Control with `body_format`: `storage` (default, XHTML) | `view` (rendered HTML) | `none` (metadata only). Page through large bodies with `body_start` + `body_limit`; check the `truncated` flag in the result.

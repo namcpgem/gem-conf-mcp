@@ -1,8 +1,18 @@
 import {z} from "zod";
 import {confluenceRequest} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
+
+export const getComments = async ({page_id}) => {
+  const params = new URLSearchParams({expand: "body.view", limit: "50"});
+  return confluenceRequest(
+    "GET",
+    `/content/${page_id}/child/comment?${params}`,
+  );
+};
 
 export const registerGetComments = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "get_comments",
     {
       description: "Get comments on a Confluence page",
@@ -12,19 +22,6 @@ export const registerGetComments = (server) => {
           .describe("Confluence page/content ID to fetch comments for"),
       }),
     },
-    async ({page_id}) => {
-      try {
-        const params = new URLSearchParams({expand: "body.view", limit: "50"});
-        const result = await confluenceRequest(
-          "GET",
-          `/content/${page_id}/child/comment?${params}`,
-        );
-        return {
-          content: [{text: JSON.stringify(result, null, 2), type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    getComments,
   );
 };

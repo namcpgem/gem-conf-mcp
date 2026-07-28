@@ -1,9 +1,29 @@
 import {z} from "zod";
 import {confluenceRequest} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
 import {resolveBody, writeBodyParamsSchema} from "../markdown.js";
 
+export const createPage = async ({
+  body,
+  body_format,
+  parent_page_id,
+  space_key,
+  title,
+}) => {
+  const value = resolveBody(body, body_format);
+  const payload = {
+    body: {storage: {representation: "storage", value}},
+    space: {key: space_key},
+    title,
+    type: "page",
+  };
+  if (parent_page_id) payload.ancestors = [{id: parent_page_id}];
+  return confluenceRequest("POST", "/content", payload);
+};
+
 export const registerCreatePage = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "create_page",
     {
       description:
@@ -23,23 +43,6 @@ export const registerCreatePage = (server) => {
         ...writeBodyParamsSchema,
       }),
     },
-    async ({body, body_format, parent_page_id, space_key, title}) => {
-      try {
-        const value = resolveBody(body, body_format);
-        const payload = {
-          body: {storage: {representation: "storage", value}},
-          space: {key: space_key},
-          title,
-          type: "page",
-        };
-        if (parent_page_id) payload.ancestors = [{id: parent_page_id}];
-        const created = await confluenceRequest("POST", "/content", payload);
-        return {
-          content: [{text: JSON.stringify(created, null, 2), type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    createPage,
   );
 };

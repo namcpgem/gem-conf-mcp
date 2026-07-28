@@ -1,9 +1,25 @@
 import {z} from "zod";
 import {confluenceRequest} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
 import {bodyParamsSchema, expandForBody, formatPage} from "../page-body.js";
 
+export const getPage = async ({page_id, ...opts}) => {
+  const expand = [
+    ...expandForBody(opts.body_format),
+    "version",
+    "space",
+    "ancestors",
+  ].join(",");
+  const page = await confluenceRequest(
+    "GET",
+    `/content/${page_id}?expand=${expand}`,
+  );
+  return formatPage(page, opts);
+};
+
 export const registerGetPage = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "get_page",
     {
       description:
@@ -13,22 +29,6 @@ export const registerGetPage = (server) => {
         ...bodyParamsSchema,
       }),
     },
-    async ({page_id, ...opts}) => {
-      try {
-        const expand = [
-          ...expandForBody(opts.body_format),
-          "version",
-          "space",
-          "ancestors",
-        ].join(",");
-        const page = await confluenceRequest(
-          "GET",
-          `/content/${page_id}?expand=${expand}`,
-        );
-        return {content: [{text: formatPage(page, opts), type: "text"}]};
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    getPage,
   );
 };

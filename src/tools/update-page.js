@@ -1,9 +1,17 @@
 import {z} from "zod";
-import {confluenceRequest} from "../confluence-client.js";
+import {readForEdit, writePage} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
 import {resolveBody, writeBodyParamsSchema} from "../markdown.js";
 
+export const updatePage = async ({body, body_format, page_id, title}) => {
+  const current = await readForEdit(page_id);
+  const value = resolveBody(body, body_format) ?? current.body.storage.value;
+  return writePage(page_id, {current, title, value});
+};
+
 export const registerUpdatePage = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "update_page",
     {
       description:
@@ -23,37 +31,6 @@ export const registerUpdatePage = (server) => {
         ...writeBodyParamsSchema,
       }),
     },
-    async ({body, body_format, page_id, title}) => {
-      try {
-        const current = await confluenceRequest(
-          "GET",
-          `/content/${page_id}?expand=version,space,body.storage`,
-        );
-        const value = resolveBody(body, body_format);
-        const payload = {
-          body: {
-            storage: {
-              representation: "storage",
-              value: value ?? current.body.storage.value,
-            },
-          },
-          id: page_id,
-          space: {key: current.space.key},
-          title: title ?? current.title,
-          type: "page",
-          version: {number: current.version.number + 1},
-        };
-        const updated = await confluenceRequest(
-          "PUT",
-          `/content/${page_id}`,
-          payload,
-        );
-        return {
-          content: [{text: JSON.stringify(updated, null, 2), type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    updatePage,
   );
 };

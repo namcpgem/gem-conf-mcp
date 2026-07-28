@@ -1,8 +1,20 @@
 import {z} from "zod";
 import {confluenceRequest} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
+
+export const getUser = async ({key, username}) => {
+  if (!key && !username) {
+    throw new Error("Provide either 'key' or 'username'.");
+  }
+  const params = new URLSearchParams();
+  if (key) params.set("key", key);
+  else params.set("username", username);
+  return confluenceRequest("GET", `/user?${params}`);
+};
 
 export const registerGetUser = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "get_user",
     {
       description:
@@ -15,26 +27,6 @@ export const registerGetUser = (server) => {
         username: z.string().optional().describe("Username (login name)"),
       }),
     },
-    async ({key, username}) => {
-      try {
-        if (!key && !username) {
-          return {
-            content: [
-              {text: "Provide either 'key' or 'username'.", type: "text"},
-            ],
-            isError: true,
-          };
-        }
-        const params = new URLSearchParams();
-        if (key) params.set("key", key);
-        else params.set("username", username);
-        const result = await confluenceRequest("GET", `/user?${params}`);
-        return {
-          content: [{text: JSON.stringify(result, null, 2), type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    getUser,
   );
 };

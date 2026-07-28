@@ -1,8 +1,15 @@
 import {z} from "zod";
 import {confluenceRequest} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
+
+export const deletePage = async ({page_id}) => {
+  await confluenceRequest("DELETE", `/content/${page_id}`);
+  return `Page ${page_id} moved to trash`;
+};
 
 export const registerDeletePage = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "delete_page",
     {
       description:
@@ -13,15 +20,6 @@ export const registerDeletePage = (server) => {
           .describe("Confluence page/content ID to move to trash"),
       }),
     },
-    async ({page_id}) => {
-      try {
-        await confluenceRequest("DELETE", `/content/${page_id}`);
-        return {
-          content: [{text: `Page ${page_id} moved to trash`, type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    deletePage,
   );
 };

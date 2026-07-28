@@ -1,8 +1,18 @@
 import {z} from "zod";
 import {confluenceRequest} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
+
+export const listSpaces = async ({limit = 25, space_key}) => {
+  if (space_key) {
+    return confluenceRequest("GET", `/space/${space_key}`);
+  }
+  const params = new URLSearchParams({limit: String(limit)});
+  return confluenceRequest("GET", `/space?${params}`);
+};
 
 export const registerListSpaces = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "list_spaces",
     {
       description: "List Confluence spaces, or fetch a single space by key",
@@ -20,22 +30,6 @@ export const registerListSpaces = (server) => {
           ),
       }),
     },
-    async ({limit = 25, space_key}) => {
-      try {
-        if (space_key) {
-          const space = await confluenceRequest("GET", `/space/${space_key}`);
-          return {
-            content: [{text: JSON.stringify(space, null, 2), type: "text"}],
-          };
-        }
-        const params = new URLSearchParams({limit: String(limit)});
-        const result = await confluenceRequest("GET", `/space?${params}`);
-        return {
-          content: [{text: JSON.stringify(result, null, 2), type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    listSpaces,
   );
 };

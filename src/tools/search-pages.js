@@ -1,8 +1,19 @@
 import {z} from "zod";
 import {confluenceRequest} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
+
+export const searchPages = async ({cql, limit = 25, start = 0}) => {
+  const params = new URLSearchParams({
+    cql,
+    limit: String(limit),
+    start: String(start),
+  });
+  return confluenceRequest("GET", `/content/search?${params}`);
+};
 
 export const registerSearchPages = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "search_pages",
     {
       description:
@@ -21,23 +32,6 @@ export const registerSearchPages = (server) => {
         start: z.number().default(0).optional().describe("Pagination offset"),
       }),
     },
-    async ({cql, limit = 25, start = 0}) => {
-      try {
-        const params = new URLSearchParams({
-          cql,
-          limit: String(limit),
-          start: String(start),
-        });
-        const result = await confluenceRequest(
-          "GET",
-          `/content/search?${params}`,
-        );
-        return {
-          content: [{text: JSON.stringify(result, null, 2), type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    searchPages,
   );
 };

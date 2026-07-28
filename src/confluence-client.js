@@ -28,3 +28,25 @@ export const confluenceRequest = async (method, path, body) => {
   if (res.status === 204) return null;
   return res.json();
 };
+
+/** Fetch a page with the version/space/body needed to build an edit payload. */
+export const readForEdit = (pageId) =>
+  confluenceRequest(
+    "GET",
+    `/content/${pageId}?expand=version,space,body.storage`,
+  );
+
+/**
+ * Write a page's storage body, auto-incrementing the version.
+ * @param {string} pageId
+ * @param {{value: string, current: any, title?: string}} opts
+ */
+export const writePage = (pageId, {value, current, title}) =>
+  confluenceRequest("PUT", `/content/${pageId}`, {
+    body: {storage: {representation: "storage", value}},
+    id: pageId,
+    space: {key: current.space.key},
+    title: title ?? current.title,
+    type: "page",
+    version: {number: current.version.number + 1},
+  });

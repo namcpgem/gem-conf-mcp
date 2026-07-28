@@ -1,8 +1,19 @@
 import {z} from "zod";
 import {confluenceRequest} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
+
+export const addComment = async ({body, page_id}) => {
+  const payload = {
+    body: {storage: {representation: "storage", value: body}},
+    container: {id: page_id, type: "page"},
+    type: "comment",
+  };
+  return confluenceRequest("POST", "/content", payload);
+};
 
 export const registerAddComment = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "add_comment",
     {
       description:
@@ -18,20 +29,6 @@ export const registerAddComment = (server) => {
           .describe("Confluence page/content ID to comment on"),
       }),
     },
-    async ({body, page_id}) => {
-      try {
-        const payload = {
-          body: {storage: {representation: "storage", value: body}},
-          container: {id: page_id, type: "page"},
-          type: "comment",
-        };
-        const created = await confluenceRequest("POST", "/content", payload);
-        return {
-          content: [{text: JSON.stringify(created, null, 2), type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    addComment,
   );
 };

@@ -1,8 +1,26 @@
 import {z} from "zod";
-import {confluenceRequest} from "../confluence-client.js";
+import {readForEdit, writePage} from "../confluence-client.js";
+import {defineTool} from "../define-tool.js";
+
+export const patchPage = async ({new_string, old_string, page_id}) => {
+  const current = await readForEdit(page_id);
+  const body = current.body.storage.value;
+  const matches = body.split(old_string).length - 1;
+  if (matches === 0) {
+    throw new Error("old_string not found in page body");
+  }
+  if (matches > 1) {
+    throw new Error(
+      `old_string matches ${matches} times; add more context to make it unique`,
+    );
+  }
+  const value = body.replace(old_string, () => new_string);
+  return writePage(page_id, {current, title: current.title, value});
+};
 
 export const registerPatchPage = (server) => {
-  server.registerTool(
+  defineTool(
+    server,
     "patch_page",
     {
       description:
@@ -17,53 +35,6 @@ export const registerPatchPage = (server) => {
         page_id: z.string().describe("Confluence page/content ID to update"),
       }),
     },
-    async ({new_string, old_string, page_id}) => {
-      try {
-        const current = await confluenceRequest(
-          "GET",
-          `/content/${page_id}?expand=version,space,body.storage`,
-        );
-        const body = current.body.storage.value;
-        const matches = body.split(old_string).length - 1;
-        if (matches === 0) {
-          return {
-            content: [
-              {text: "old_string not found in page body", type: "text"},
-            ],
-            isError: true,
-          };
-        }
-        if (matches > 1) {
-          return {
-            content: [
-              {
-                text: `old_string matches ${matches} times; add more context to make it unique`,
-                type: "text",
-              },
-            ],
-            isError: true,
-          };
-        }
-        const value = body.replace(old_string, () => new_string);
-        const payload = {
-          body: {storage: {representation: "storage", value}},
-          id: page_id,
-          space: {key: current.space.key},
-          title: current.title,
-          type: "page",
-          version: {number: current.version.number + 1},
-        };
-        const updated = await confluenceRequest(
-          "PUT",
-          `/content/${page_id}`,
-          payload,
-        );
-        return {
-          content: [{text: JSON.stringify(updated, null, 2), type: "text"}],
-        };
-      } catch (err) {
-        return {content: [{text: err.message, type: "text"}], isError: true};
-      }
-    },
+    patchPage,
   );
 };

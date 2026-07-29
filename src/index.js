@@ -1,5 +1,6 @@
 import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 import {StdioServerTransport} from "@modelcontextprotocol/sdk/server/stdio.js";
+import pkg from "../package.json" with {type: "json"};
 import {registerAddComment} from "./tools/add-comment.js";
 import {registerCreatePage} from "./tools/create-page.js";
 import {registerDeletePage} from "./tools/delete-page.js";
@@ -12,7 +13,7 @@ import {registerPatchPage} from "./tools/patch-page.js";
 import {registerSearchPages} from "./tools/search-pages.js";
 import {registerUpdatePage} from "./tools/update-page.js";
 
-const server = new McpServer({name: "conf-mcp", version: "1.0.0"});
+const server = new McpServer({name: "conf-mcp", version: pkg.version});
 
 registerGetPage(server);
 registerCreatePage(server);

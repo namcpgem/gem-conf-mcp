@@ -5,7 +5,12 @@ import dotenv from "dotenv";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({path: resolve(__dirname, "../.env")});
 
-const BASE = `${process.env.CONFLUENCE_HOST}/rest/api`;
+// Tolerate MCP client configs that pass literal quotes or a trailing slash.
+const HOST = (process.env.CONFLUENCE_HOST ?? "")
+  .trim()
+  .replace(/^["']|["']$/g, "")
+  .replace(/\/+$/, "");
+const BASE = `${HOST}/rest/api`;
 const AUTH = Buffer.from(
   `${process.env.CONFLUENCE_USERNAME}:${process.env.CONFLUENCE_PASSWORD}`,
 ).toString("base64");
